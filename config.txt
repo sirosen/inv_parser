@@ -1,0 +1,56 @@
+#This is a config file for the System Profiler Parsing Toolchain
+#The left column contains field names, the right contains
+#our specialized form of xpath expressions, which support
+#spaces, escaped slashes, and parens
+
+#Note: We do not list 'serial' or 'location' here because they are special cases
+#Values for these will generally be overwritten.
+
+####################
+####################
+# SPECIAL CASES
+####################
+####################
+#
+# In the xpath expressions below, the following special cases
+# need different handling from what might be intuitive.
+#
+# Inside of brackets, node names will not be as specified elsewhere.
+# They will be cleaned for xml, which means that non-alphanumerics will be
+# replaced, and the strings prefixed with a single underscore. To get access
+# to the original name, you should access the @name attribute, which
+# contains the original name, with only &, <, and " replaced with
+# underscores. (These are illegal characters for xml attributes).
+#
+# When entering a slash as part of a node name, escape the slash with a
+# single backslash. For example, write //Graphics\/Displays/* to select
+# all children of the node with name "Graphics/Displays". As mentioned
+# above, the name will of course be cleaned.
+#
+# At present, we do not support node names containing backslashes.
+
+model           //Hardware/Hardware Overview/Model Identifier/@val
+#We need to handle 'Number of Processors' and 'Number Of Processors'
+NumProcs        //Hardware/Hardware Overview/*[contains(@name,'Number') and contains(@name,'Processors')]/@val
+ProcSpeed       //Hardware/Hardware Overview/Processor Speed/@val
+ProcName        //Hardware/Hardware Overview/Processor Name/@val
+os              //Software/System Software Overview/System Version/@val
+#There may be multiple ethernet devices
+macaddress      //Network/*[contains(@name,'Ethernet')][1]/Ethernet/MAC Address/@val
+videocard       //Graphics\/Displays//Chipset Model/@val
+#We need to handle Serial-ATA and ATA devices
+dvddrive        //*[contains(@name,'ATA')]//Model[contains(@val,'DVD')]/@val
+HDDSize         //Serial-ATA//Description/*/Volumes/../Capacity/@val
+DriveModel      //Serial-ATA//Description/*/Volumes/../Model/@val
+MemSize         //Hardware/Hardware Overview/Memory/@val
+MemSpeed        //Memory/Memory Slots/ECC/*[1]/Speed/@val
+MemType         //Memory/Memory Slots/ECC/*[1]/Type/@val
+
+db-insert       model                   model
+db-insert       os                      os
+db-insert       macaddress              macaddress
+db-insert       processors              NumProcs "x" ProcSpeed " " ProcName
+db-insert       videocard               videocard
+db-insert       dvddrive                dvddrive
+db-insert       harddrive               HDDSize " " DriveModel
+db-insert       ram                     MemSize " of " MemSpeed " " MemType
