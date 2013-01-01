@@ -90,12 +90,6 @@ perform lookups on the report using xpath
 expressions, and supports dumping the element
 tree to a string of xml.
 
-==locations.py==
-Locations is the centralized listing of machine
-locations in the lab. It support some simple
-lookup operations. We chose not to parse a config
-file in order to help simplify the ssh_run system.
-
 ==xml_cleanup.py==
 The xml_cleanup module is the saddest part of
 handling system profiler output. Because Apple

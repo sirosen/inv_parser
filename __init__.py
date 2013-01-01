@@ -1,1 +1,1 @@
-__all__ = ['db_insert','locations','xml_cleanup','profiler']
+__all__ = ['db_insert','xml_cleanup','profiler']
